@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Brand Protection AI — Know where your brand appears</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%231d1d1f'><path d='M12 2L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-3zm0 2.18l7 2.33v4.49c0 4.6-3.14 8.9-7 10-3.86-1.1-7-5.4-7-10V6.51l7-2.33z'/></svg>">
+</head>
+<body>
+
+  <!-- Glass Header -->
+  <header class="glass-header">
+    <div class="header-container">
+      <a class="brand-badge" onclick="navigateTo('landing')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        <span>Brand Protection AI</span>
+      </a>
+
+      <div class="header-actions">
+        <button id="provider-status-pill" class="pill-button" onclick="openSettingsModal()">
+          DEMO (Local)
+        </button>
+        <button id="open-sources-btn" class="pill-button">
+          Sources
+        </button>
+        <button id="open-settings-btn" class="pill-button" title="AI Settings">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+          Settings
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="main-wrapper">
+
+    <!-- 1. PRIMARY LANDING PAGE -->
+    <section id="view-landing" class="view-section active">
+      <div class="hero-block">
+        <h1 class="hero-title">Brand Protection AI</h1>
+        <p class="hero-sub">Know where your brand appears</p>
+      </div>
+
+      <!-- Exactly Four Primary Selectable Items -->
+      <div class="primary-cards-grid">
+        <!-- A. Name -->
+        <div id="card-name" class="primary-card glass-panel">
+          <div class="primary-card-top">
+            <div class="primary-card-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 7V4h16v3M9 20h6M12 4v16"/>
+              </svg>
+            </div>
+            <span id="badge-card-name" class="primary-card-status">Required</span>
+          </div>
+          <div>
+            <div class="primary-card-title">Name</div>
+            <div class="primary-card-desc">Brand or organisation name to safeguard.</div>
+          </div>
+        </div>
+
+        <!-- B. Logo -->
+        <div id="card-logo" class="primary-card glass-panel">
+          <div class="primary-card-top">
+            <div class="primary-card-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                <circle cx="8.5" cy="8.5" r="1.5"/>
+                <polyline points="21 15 16 10 5 21"/>
+              </svg>
+            </div>
+            <span id="badge-card-logo" class="primary-card-status">Optional</span>
+          </div>
+          <div>
+            <div class="primary-card-title">Logo</div>
+            <div class="primary-card-desc">Official emblem or app icon for visual comparison.</div>
+          </div>
+        </div>
+
+        <!-- C. Website -->
+        <div id="card-web" class="primary-card glass-panel">
+          <div class="primary-card-top">
+            <div class="primary-card-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="2" y1="12" x2="22" y2="12"/>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+              </svg>
+            </div>
+            <span id="badge-card-web" class="primary-card-status">Optional</span>
+          </div>
+          <div>
+            <div class="primary-card-title">Website</div>
+            <div class="primary-card-desc">Authorized official web domain.</div>
+          </div>
+        </div>
+
+        <!-- D. Description -->
+        <div id="card-desc" class="primary-card glass-panel">
+          <div class="primary-card-top">
+            <div class="primary-card-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="16" y1="13" x2="8" y2="13"/>
+                <line x1="16" y1="17" x2="8" y2="17"/>
+              </svg>
+            </div>
+            <span id="badge-card-desc" class="primary-card-status">Optional</span>
+          </div>
+          <div>
+            <div class="primary-card-title">Description</div>
+            <div class="primary-card-desc">Products, official handles, and markers.</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="max-width: 320px; margin: 0 auto;">
+        <button id="landing-review-btn" class="primary-btn" onclick="navigateTo('review')" style="display: none;">
+          Review Profile →
+        </button>
+      </div>
+    </section>
+
+    <!-- 2. FOCUS INPUT: NAME -->
+    <section id="view-name" class="view-section">
+      <div class="focus-card glass-panel">
+        <div class="focus-header">
+          <button class="back-link" onclick="navigateTo('landing')">← Back</button>
+          <span class="step-indicator">Step 1 of 4</span>
+        </div>
+        <div class="stepper-container">
+          <div class="stepper-dot active"></div>
+          <div class="stepper-dot"></div>
+          <div class="stepper-dot"></div>
+          <div class="stepper-dot"></div>
+        </div>
+
+        <label class="input-label" for="input-brand-name">Brand or Organisation Name</label>
+        <input id="input-brand-name" type="text" class="recessed-input" placeholder="e.g. Acme Corp" autofocus>
+        <span class="input-hint">The primary commercial name used on your official products and services.</span>
+
+        <div style="margin-top: 32px; display: flex; gap: 12px;">
+          <button class="primary-btn" onclick="navigateTo('logo')">Continue →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. FOCUS INPUT: LOGO -->
+    <section id="view-logo" class="view-section">
+      <div class="focus-card glass-panel">
+        <div class="focus-header">
+          <button class="back-link" onclick="navigateTo('name')">← Back</button>
+          <span class="step-indicator">Step 2 of 4</span>
+        </div>
+        <div class="stepper-container">
+          <div class="stepper-dot active"></div>
+          <div class="stepper-dot active"></div>
+          <div class="stepper-dot"></div>
+          <div class="stepper-dot"></div>
+        </div>
+
+        <label class="input-label">Official Logo or Emblem</label>
+        
+        <div id="logo-dropzone" class="dropzone">
+          <input type="file" id="logo-file-input" accept="image/png,image/jpeg,image/svg+xml" style="display: none;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" style="color: var(--text-tertiary); margin-bottom: 8px;">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+          <div style="font-size: 14px; font-weight: 500;">Click to upload or drag logo here</div>
+          <div style="font-size: 12px; color: var(--text-tertiary); margin-top: 4px;">PNG, SVG, or JPG (Max 5MB)</div>
+        </div>
+
+        <div id="logo-preview-container" class="preview-box" style="display: none;">
+          <img id="logo-preview-img" class="logo-preview-img" src="" alt="Logo">
+          <div style="flex: 1;">
+            <div style="font-size: 13px; font-weight: 600;">Logo uploaded</div>
+            <button id="remove-logo-btn" class="back-link" style="color: #d70015; font-size: 12px; margin-top: 4px;">Remove</button>
+          </div>
+        </div>
+
+        <span class="input-hint">Used to detect visual lookalikes and imposter logos in app stores and ad campaigns.</span>
+
+        <div style="margin-top: 32px; display: flex; gap: 12px;">
+          <button class="secondary-btn" onclick="navigateTo('website')">Skip</button>
+          <button class="primary-btn" onclick="navigateTo('website')">Continue →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. FOCUS INPUT: WEBSITE -->
+    <section id="view-website" class="view-section">
+      <div class="focus-card glass-panel">
+        <div class="focus-header">
+          <button class="back-link" onclick="navigateTo('logo')">← Back</button>
+          <span class="step-indicator">Step 3 of 4</span>
+        </div>
+        <div class="stepper-container">
+          <div class="stepper-dot active"></div>
+          <div class="stepper-dot active"></div>
+          <div class="stepper-dot active"></div>
+          <div class="stepper-dot"></div>
+        </div>
+
+        <label class="input-label" for="input-brand-web">Official Website URL</label>
+        <input id="input-brand-web" type="url" class="recessed-input" placeholder="https://acmecorp.com">
+        <span class="input-hint">Ensures your legitimate domain is always verified and never flagged as an imposter.</span>
+
+        <div style="margin-top: 32px; display: flex; gap: 12px;">
+          <button class="secondary-btn" onclick="navigateTo('description')">Skip</button>
+          <button class="primary-btn" onclick="navigateTo('description')">Continue →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. FOCUS INPUT: DESCRIPTION -->
+    <section id="view-description" class="view-section">
+      <div class="focus-card glass-panel">
+        <div class="focus-header">
+          <button class="back-link" onclick="navigateTo('website')">← Back</button>
+          <span class="step-indicator">Step 4 of 4</span>
+        </div>
+        <div class="stepper-container">
+          <div class="stepper-dot active"></div>
+          <div class="stepper-dot active"></div>
+          <div class="stepper-dot active"></div>
+          <div class="stepper-dot active"></div>
+        </div>
+
+        <label class="input-label" for="input-brand-desc">Brand Description & Identifiers</label>
+        <textarea id="input-brand-desc" class="recessed-input" rows="4" placeholder="Briefly describe products, official accounts, known partners, and trademarks..."></textarea>
+        <span class="input-hint">Helps AI distinguish between authorized distributors and unauthorized scam pages.</span>
+
+        <div style="margin-top: 32px; display: flex; gap: 12px;">
+          <button class="secondary-btn" onclick="navigateTo('review')">Skip</button>
+          <button class="primary-btn" onclick="navigateTo('review')">Review Profile →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. BRAND PROFILE REVIEW -->
+    <section id="view-review" class="view-section">
+      <div class="focus-card glass-panel">
+        <div class="focus-header">
+          <button class="back-link" onclick="navigateTo('landing')">← Back to Overview</button>
+          <span class="step-indicator">Profile Review</span>
+        </div>
+
+        <h2 style="font-size: 20px; font-weight: 600; margin-bottom: 20px; letter-spacing: -0.01em;">
+          Verify Brand Profile
+        </h2>
+
+        <div class="review-item">
+          <span class="review-label">Brand Name</span>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span id="review-name-val" class="review-value">—</span>
+            <button class="back-link" onclick="navigateTo('name')" style="font-size: 12px;">Edit</button>
+          </div>
+        </div>
+
+        <div class="review-item">
+          <span class="review-label">Logo Emblem</span>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div id="review-logo-box" class="review-value">None provided</div>
+            <button class="back-link" onclick="navigateTo('logo')" style="font-size: 12px;">Edit</button>
+          </div>
+        </div>
+
+        <div class="review-item">
+          <span class="review-label">Official Website</span>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span id="review-web-val" class="review-value">None provided</span>
+            <button class="back-link" onclick="navigateTo('website')" style="font-size: 12px;">Edit</button>
+          </div>
+        </div>
+
+        <div class="review-item">
+          <span class="review-label">Description</span>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span id="review-desc-val" class="review-value">None provided</span>
+            <button class="back-link" onclick="navigateTo('description')" style="font-size: 12px;">Edit</button>
+          </div>
+        </div>
+
+        <div id="review-provider-notice" class="input-hint" style="margin-top: 20px; padding: 12px 14px; background: rgba(0, 0, 0, 0.03); border-radius: var(--radius-sm);">
+          Running privately with local heuristic engine.
+        </div>
+
+        <div style="margin-top: 28px;">
+          <button id="start-analysis-btn" class="primary-btn">
+            Analyse brand
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. QUIET ANALYSIS STATE -->
+    <section id="view-analyzing" class="view-section">
+      <div class="focus-card glass-panel" style="text-align: center; padding: 60px 32px;">
+        <div class="loading-spinner" style="margin: 0 auto 24px; width: 32px; height: 32px; border-width: 3px;"></div>
+        <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">Analysing Brand Signals</h3>
+        <p id="analysis-step-text" style="font-size: 14px; color: var(--text-secondary); max-width: 380px; margin: 0 auto;">
+          Preparing brand profile...
+        </p>
+      </div>
+    </section>
+
+    <!-- 8. RESULTS PAGE -->
+    <section id="view-results" class="view-section">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;">
+        <button class="back-link" onclick="navigateTo('review')">← New Analysis</button>
+        <span id="results-provider-badge" class="pill-button">Demo Mode</span>
+      </div>
+
+      <!-- Demo Banner if applicable -->
+      <div id="results-demo-banner" class="glass-panel" style="padding: 12px 16px; margin-bottom: 20px; background: rgba(255, 149, 0, 0.08); border-color: rgba(255, 149, 0, 0.2); display: none;">
+        <div style="font-size: 12px; font-weight: 600; color: #b25000;">SIMULATED DATA / DEMO MODE</div>
+        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">
+          Results are generated using heuristic fixtures. To run real web and model queries, connect an AI Provider in Settings.
+        </div>
+      </div>
+
+      <!-- Overview Header -->
+      <div class="glass-panel" style="padding: 24px; margin-bottom: 24px;">
+        <h2 id="results-brand-title" style="font-size: 24px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 6px;">
+          Acme Corp
+        </h2>
+        <p id="results-summary-text" style="font-size: 14px; color: var(--text-secondary); line-height: 1.45;">
+          Brand analysis overview.
+        </p>
+      </div>
+
+      <!-- Results Tabs -->
+      <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+        <button id="tab-btn-detections" class="pill-button active" onclick="switchResultsTab('detections')">
+          All Detections
+        </button>
+        <button id="tab-btn-patents" class="pill-button" onclick="switchResultsTab('patents')">
+          Patents & Copyrights
+        </button>
+      </div>
+
+      <!-- Detections List -->
+      <div id="detections-container"></div>
+
+      <!-- Patents & Copyrights List -->
+      <div id="patents-container" style="display: none;"></div>
+
+      <div style="text-align: center; margin-top: 36px;">
+        <span style="font-size: 12px; color: var(--text-tertiary);">
+          Confidence scores reflect heuristic and AI model probability, not legal proof. Detections do not constitute legal advice.
+        </span>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- AI PROVIDER SETTINGS MODAL -->
+  <div id="settings-modal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 style="font-size: 17px; font-weight: 600;">AI Provider Settings</h3>
+        <button id="close-settings-btn" class="close-btn">✕</button>
+      </div>
+
+      <!-- Provider Selector -->
+      <div style="margin-bottom: 16px;">
+        <label class="input-label" for="provider-select">Provider</label>
+        <select id="provider-select" class="recessed-input">
+          <option value="demo">Demo Mode (Simulated / Offline)</option>
+          <option value="ollama">Ollama (Local on this Mac)</option>
+          <option value="openai">OpenAI (Official API)</option>
+          <option value="gemini">Google Gemini (Official API)</option>
+          <option value="anthropic">Anthropic Claude (Official API)</option>
+        </select>
+      </div>
+
+      <!-- Model Selector -->
+      <div style="margin-bottom: 16px;">
+        <label class="input-label" for="model-select">Model</label>
+        <select id="model-select" class="recessed-input">
+          <option value="default">Standard</option>
+        </select>
+      </div>
+
+      <!-- API Key Field (Cloud only) -->
+      <div id="api-key-group" style="margin-bottom: 16px; display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <label class="input-label" for="provider-api-key" style="margin-bottom: 0;">API Key</label>
+          <button id="toggle-key-visibility" class="back-link" style="font-size: 12px;">Show</button>
+        </div>
+        <input id="provider-api-key" type="password" class="recessed-input" placeholder="sk-..." autocomplete="off">
+        <span class="input-hint">Keys are held in server memory for this session and never written to disk or sent to other providers.</span>
+      </div>
+
+      <!-- Ollama Endpoint (Local only) -->
+      <div id="ollama-endpoint-group" style="margin-bottom: 16px; display: none;">
+        <label class="input-label" for="ollama-base-url">Local Ollama Endpoint</label>
+        <input id="ollama-base-url" type="text" class="recessed-input" value="http://localhost:11434">
+        <span class="input-hint">Requires Ollama running on your Mac ('ollama serve'). No cloud key required.</span>
+      </div>
+
+      <!-- Local vs Cloud indicator -->
+      <div id="local-processing-notice" class="input-hint badge-verified" style="padding: 8px 12px; margin-bottom: 16px; display: block;">
+        🔒 Local processing: Data stays on your machine.
+      </div>
+      <div id="cloud-processing-notice" class="input-hint badge-review" style="padding: 8px 12px; margin-bottom: 16px; display: none;">
+        ☁️ Cloud processing: Data sent to provider API over HTTPS during analysis.
+      </div>
+
+      <div id="provider-test-status" class="input-hint" style="margin-bottom: 16px; display: none;"></div>
+
+      <div style="display: flex; gap: 10px; margin-top: 24px;">
+        <button id="disconnect-btn" class="secondary-btn" style="flex: 1;">Disconnect</button>
+        <button id="test-connection-btn" class="primary-btn" style="flex: 2;">Connect & Test</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SOURCES MODAL -->
+  <div id="sources-modal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 style="font-size: 17px; font-weight: 600;">Configured Sources</h3>
+        <button id="close-sources-btn" class="close-btn">✕</button>
+      </div>
+      <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 18px;">
+        Only enabled channels are queried during analysis. Coverage is limited to verified public interfaces.
+      </p>
+
+      <div id="sources-list-container"></div>
+    </div>
+  </div>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
