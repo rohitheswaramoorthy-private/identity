@@ -1,5 +1,5 @@
 """
-Analysis Orchestration API Route.
+Analysis Orchestration API Route for IdentityAI.
 """
 
 from fastapi import APIRouter, Header, HTTPException
@@ -21,9 +21,9 @@ async def analyze_brand(req: AnalysisRequest, x_session_id: Optional[str] = Head
     session_id = get_or_create_session(x_session_id)
     cfg = get_session_provider_config(session_id)
     
-    provider_name = cfg.get("provider", "demo")
+    provider_name = cfg.get("provider", "ollama")
     api_key = cfg.get("api_key", "")
-    model_name = cfg.get("model", "")
+    model_name = cfg.get("model", "llama3.2")
     base_url = cfg.get("base_url", "")
     
     adapter = get_provider_adapter(
@@ -34,14 +34,16 @@ async def analyze_brand(req: AnalysisRequest, x_session_id: Optional[str] = Head
     )
 
     # Filter enabled sources
-    enabled_sources = [s.id for s in SOURCES_DB if s.enabled]
-    active_source_names = [s.name for s in SOURCES_DB if s.enabled]
+    enabled_sources = [s for s in SOURCES_DB if s.enabled]
+    enabled_source_ids = [s.id for s in enabled_sources]
+    active_source_names = [s.name for s in enabled_sources]
 
-    # Step 1: Real retrieval layer separate from AI
+    # Step 1: Real retrieval layer separate from AI (including custom sources)
     candidates = await search_engine.retrieve_candidates(
         brand_name=req.name.strip(),
         official_website=req.website,
-        enabled_sources=enabled_sources
+        enabled_sources=enabled_source_ids,
+        all_sources=SOURCES_DB
     )
 
     # Step 2: AI provider evaluation
@@ -56,7 +58,6 @@ async def analyze_brand(req: AnalysisRequest, x_session_id: Optional[str] = Head
         brand_name=req.name.strip(),
         provider_used=provider_name.capitalize(),
         model_used=model_name or "Standard",
-        is_demo=(provider_name.lower() == "demo"),
         summary=analysis_result.get("summary", "Analysis completed."),
         total_checked=len(analysis_result.get("items", [])),
         sources_checked=active_source_names,

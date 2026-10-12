@@ -632,3 +632,64 @@ body {
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+
+.permission-box {
+  background: rgba(0, 0, 0, 0.02);
+  border: 1px dashed rgba(0, 0, 0, 0.15);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin-bottom: 16px;
+  text-align: left;
+}
+
+.permission-box-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.permission-box-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  margin-bottom: 12px;
+}
+
+.model-tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.model-tag {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  background: rgba(0, 0, 0, 0.04);
+  color: var(--text-primary);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.model-tag:hover {
+  background: #ffffff;
+  border-color: var(--text-primary);
+}
+
+.model-tag.selected {
+  background: var(--text-primary);
+  color: #ffffff;
+  border-color: var(--text-primary);
+}
+
+.custom-source-card {
+  background: rgba(0, 0, 0, 0.02);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin-top: 18px;
+}

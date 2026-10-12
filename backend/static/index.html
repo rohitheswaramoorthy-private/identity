@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Brand Protection AI — Know where your brand appears</title>
+  <title>IdentityAI — Know where your brand appears</title>
   <link rel="stylesheet" href="/static/css/style.css">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%231d1d1f'><path d='M12 2L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-3zm0 2.18l7 2.33v4.49c0 4.6-3.14 8.9-7 10-3.86-1.1-7-5.4-7-10V6.51l7-2.33z'/></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231d1d1f' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='3' width='18' height='18' rx='5' ry='5'/><circle cx='12' cy='10' r='3.2'/><path d='M7 18.5c0-2.8 2.2-4.5 5-4.5s5 1.7 5 4.5'/></svg>">
 </head>
 <body>
 
@@ -13,15 +13,18 @@
   <header class="glass-header">
     <div class="header-container">
       <a class="brand-badge" onclick="navigateTo('landing')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        <!-- Finalized Default IdentityAI Logo (Biometric / ID Glyph) -->
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="5" ry="5"/>
+          <circle cx="12" cy="10" r="3.2"/>
+          <path d="M7 18.5c0-2.8 2.2-4.5 5-4.5s5 1.7 5 4.5"/>
         </svg>
-        <span>Brand Protection AI</span>
+        <span>IdentityAI</span>
       </a>
 
       <div class="header-actions">
         <button id="provider-status-pill" class="pill-button" onclick="openSettingsModal()">
-          DEMO (Local)
+          Ollama (Local)
         </button>
         <button id="open-sources-btn" class="pill-button">
           Sources
@@ -43,7 +46,7 @@
     <!-- 1. PRIMARY LANDING PAGE -->
     <section id="view-landing" class="view-section active">
       <div class="hero-block">
-        <h1 class="hero-title">Brand Protection AI</h1>
+        <h1 class="hero-title">IdentityAI</h1>
         <p class="hero-sub">Know where your brand appears</p>
       </div>
 
@@ -290,8 +293,17 @@
           </div>
         </div>
 
+        <!-- Selected Model Pill on Review -->
+        <div class="review-item">
+          <span class="review-label">Active AI Model</span>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span id="review-model-val" class="review-value" style="font-family: monospace; font-size: 13px;">llama3.2</span>
+            <button class="back-link" onclick="openSettingsModal()" style="font-size: 12px;">Change</button>
+          </div>
+        </div>
+
         <div id="review-provider-notice" class="input-hint" style="margin-top: 20px; padding: 12px 14px; background: rgba(0, 0, 0, 0.03); border-radius: var(--radius-sm);">
-          Running privately with local heuristic engine.
+          Running privately with local Ollama engine.
         </div>
 
         <div style="margin-top: 28px;">
@@ -317,21 +329,13 @@
     <section id="view-results" class="view-section">
       <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;">
         <button class="back-link" onclick="navigateTo('review')">← New Analysis</button>
-        <span id="results-provider-badge" class="pill-button">Demo Mode</span>
-      </div>
-
-      <!-- Demo Banner if applicable -->
-      <div id="results-demo-banner" class="glass-panel" style="padding: 12px 16px; margin-bottom: 20px; background: rgba(255, 149, 0, 0.08); border-color: rgba(255, 149, 0, 0.2); display: none;">
-        <div style="font-size: 12px; font-weight: 600; color: #b25000;">SIMULATED DATA / DEMO MODE</div>
-        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">
-          Results are generated using heuristic fixtures. To run real web and model queries, connect an AI Provider in Settings.
-        </div>
+        <span id="results-provider-badge" class="pill-button">Ollama (llama3.2)</span>
       </div>
 
       <!-- Overview Header -->
       <div class="glass-panel" style="padding: 24px; margin-bottom: 24px;">
         <h2 id="results-brand-title" style="font-size: 24px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 6px;">
-          Acme Corp
+          Brand Overview
         </h2>
         <p id="results-summary-text" style="font-size: 14px; color: var(--text-secondary); line-height: 1.45;">
           Brand analysis overview.
@@ -375,42 +379,80 @@
       <div style="margin-bottom: 16px;">
         <label class="input-label" for="provider-select">Provider</label>
         <select id="provider-select" class="recessed-input">
-          <option value="demo">Demo Mode (Simulated / Offline)</option>
-          <option value="ollama">Ollama (Local on this Mac)</option>
+          <option value="ollama">Ollama (Local on this Mac/PC)</option>
           <option value="openai">OpenAI (Official API)</option>
           <option value="gemini">Google Gemini (Official API)</option>
           <option value="anthropic">Anthropic Claude (Official API)</option>
         </select>
       </div>
 
-      <!-- Model Selector -->
+      <!-- Ollama Local Scan Permission Section -->
+      <div id="ollama-scan-section" class="permission-box" style="display: block;">
+        <div class="permission-box-title">Permission: Scan Local Host</div>
+        <div class="permission-box-desc">
+          IdentityAI requires your permission to probe <code>http://localhost:11434</code> on your local PC to check for an active Ollama instance and discover locally installed models.
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <button id="ollama-scan-btn" class="pill-button" type="button">
+            Allow & Scan Localhost
+          </button>
+          <span id="ollama-scan-indicator" style="font-size: 12px; color: var(--text-tertiary);"></span>
+        </div>
+        
+        <!-- Detected models container -->
+        <div id="ollama-discovered-box" style="display: none; margin-top: 12px;">
+          <span style="font-size: 11px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase;">
+            Installed Models Found:
+          </span>
+          <div id="ollama-model-tags" class="model-tag-list"></div>
+          <div style="margin-top: 10px;">
+            <button id="ollama-quick-connect-btn" class="primary-btn" style="padding: 8px 16px; font-size: 13px; width: auto;" type="button">
+              Connect to Local Ollama
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ollama Custom Endpoint (Optional override) -->
+      <div id="ollama-endpoint-group" style="margin-bottom: 16px; display: block;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <label class="input-label" for="ollama-base-url" style="margin-bottom: 0;">Local Ollama Endpoint</label>
+          <button id="reset-ollama-port-btn" class="back-link" style="font-size: 11px;" type="button">Reset to Port 11434</button>
+        </div>
+        <input id="ollama-base-url" type="text" class="recessed-input" value="http://localhost:11434">
+        <span class="input-hint" style="color: var(--accent); margin-top: 6px;">
+          Port is <strong>11434</strong> (<code>127.0.0.1:11434</code>). Note: In <code>lsof</code>, PID (e.g. 3182) is the process ID, not the port.
+        </span>
+      </div>
+
+      <!-- Model Selector (Preset Dropdown) -->
       <div style="margin-bottom: 16px;">
-        <label class="input-label" for="model-select">Model</label>
+        <label class="input-label" for="model-select">Select Model</label>
         <select id="model-select" class="recessed-input">
-          <option value="default">Standard</option>
+          <option value="llama3.2">llama3.2</option>
         </select>
+      </div>
+
+      <!-- Custom AI Model Input Field (Applicable to all providers!) -->
+      <div style="margin-bottom: 16px;">
+        <label class="input-label" for="custom-model-input">Custom / Unlisted Model Name</label>
+        <input id="custom-model-input" type="text" class="recessed-input" placeholder="e.g. llama3.3, mistral-large, deepseek-r1, gpt-4o, o3-mini">
+        <span class="input-hint">Enter any specific model identifier not listed above. Overrides dropdown selection.</span>
       </div>
 
       <!-- API Key Field (Cloud only) -->
       <div id="api-key-group" style="margin-bottom: 16px; display: none;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
           <label class="input-label" for="provider-api-key" style="margin-bottom: 0;">API Key</label>
-          <button id="toggle-key-visibility" class="back-link" style="font-size: 12px;">Show</button>
+          <button id="toggle-key-visibility" class="back-link" style="font-size: 12px;" type="button">Show</button>
         </div>
         <input id="provider-api-key" type="password" class="recessed-input" placeholder="sk-..." autocomplete="off">
         <span class="input-hint">Keys are held in server memory for this session and never written to disk or sent to other providers.</span>
       </div>
 
-      <!-- Ollama Endpoint (Local only) -->
-      <div id="ollama-endpoint-group" style="margin-bottom: 16px; display: none;">
-        <label class="input-label" for="ollama-base-url">Local Ollama Endpoint</label>
-        <input id="ollama-base-url" type="text" class="recessed-input" value="http://localhost:11434">
-        <span class="input-hint">Requires Ollama running on your Mac ('ollama serve'). No cloud key required.</span>
-      </div>
-
       <!-- Local vs Cloud indicator -->
       <div id="local-processing-notice" class="input-hint badge-verified" style="padding: 8px 12px; margin-bottom: 16px; display: block;">
-        🔒 Local processing: Data stays on your machine.
+        🔒 Local processing: Data stays strictly on your machine.
       </div>
       <div id="cloud-processing-notice" class="input-hint badge-review" style="padding: 8px 12px; margin-bottom: 16px; display: none;">
         ☁️ Cloud processing: Data sent to provider API over HTTPS during analysis.
@@ -419,24 +461,50 @@
       <div id="provider-test-status" class="input-hint" style="margin-bottom: 16px; display: none;"></div>
 
       <div style="display: flex; gap: 10px; margin-top: 24px;">
-        <button id="disconnect-btn" class="secondary-btn" style="flex: 1;">Disconnect</button>
-        <button id="test-connection-btn" class="primary-btn" style="flex: 2;">Connect & Test</button>
+        <button id="disconnect-btn" class="secondary-btn" style="flex: 1;" type="button">Disconnect</button>
+        <button id="test-connection-btn" class="primary-btn" style="flex: 2;" type="button">Connect & Test</button>
       </div>
     </div>
   </div>
 
   <!-- SOURCES MODAL -->
   <div id="sources-modal" class="modal-overlay">
-    <div class="modal-card">
+    <div class="modal-card" style="max-width: 580px;">
       <div class="modal-header">
         <h3 style="font-size: 17px; font-weight: 600;">Configured Sources</h3>
         <button id="close-sources-btn" class="close-btn">✕</button>
       </div>
       <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 18px;">
-        Only enabled channels are queried during analysis. Coverage is limited to verified public interfaces.
+        Enable or disable active verification channels, or add custom monitoring sources.
       </p>
 
       <div id="sources-list-container"></div>
+
+      <!-- Add Custom Source Form -->
+      <div class="custom-source-card">
+        <div style="font-size: 14px; font-weight: 600; margin-bottom: 12px;">+ Add Custom Source</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+          <div>
+            <label class="input-label" for="custom-src-name" style="font-size: 11px;">Source Name</label>
+            <input id="custom-src-name" type="text" class="recessed-input" placeholder="e.g. Internal IP Portal" style="padding: 8px 12px; font-size: 13px;">
+          </div>
+          <div>
+            <label class="input-label" for="custom-src-category" style="font-size: 11px;">Category</label>
+            <input id="custom-src-category" type="text" class="recessed-input" placeholder="e.g. Registry / Forum" style="padding: 8px 12px; font-size: 13px;">
+          </div>
+        </div>
+        <div style="margin-bottom: 10px;">
+          <label class="input-label" for="custom-src-url" style="font-size: 11px;">Target URL / Endpoint (Optional)</label>
+          <input id="custom-src-url" type="url" class="recessed-input" placeholder="https://..." style="padding: 8px 12px; font-size: 13px;">
+        </div>
+        <div style="margin-bottom: 12px;">
+          <label class="input-label" for="custom-src-desc" style="font-size: 11px;">Description</label>
+          <input id="custom-src-desc" type="text" class="recessed-input" placeholder="Briefly what this source indexes..." style="padding: 8px 12px; font-size: 13px;">
+        </div>
+        <button id="add-custom-source-btn" class="primary-btn" style="padding: 10px 16px; font-size: 13px;" type="button">
+          Add Source
+        </button>
+      </div>
     </div>
   </div>
 

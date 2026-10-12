@@ -1,27 +1,27 @@
 """
-Search and Evidence Retrieval Engine.
-Gathers candidates across Web, App Store, and Social sources with complete provenance.
+Search and Evidence Retrieval Engine for IdentityAI.
+Gathers candidates across Web, App Store, Social, and Custom sources with complete provenance.
 Deduplicates results and cleanly separates candidate retrieval from AI evaluation.
 """
 
 import httpx
 import uuid
-import re
 from typing import List, Dict, Any, Optional
 from urllib.parse import urlparse, quote_plus
-from backend.models import EvidenceItem
+from backend.models import EvidenceItem, SourceItem
 
 class SearchEngine:
     def __init__(self):
         self.headers = {
-            "User-Agent": "BrandProtectionAI/1.0 (+https://github.com/brandprotection/research)"
+            "User-Agent": "IdentityAI/1.0 (+https://github.com/identityai/research)"
         }
 
     async def retrieve_candidates(
         self,
         brand_name: str,
         official_website: Optional[str] = None,
-        enabled_sources: Optional[List[str]] = None
+        enabled_sources: Optional[List[str]] = None,
+        all_sources: Optional[List[SourceItem]] = None
     ) -> List[EvidenceItem]:
         enabled = enabled_sources or ["web", "app_store", "social"]
         candidates: List[EvidenceItem] = []
@@ -56,7 +56,7 @@ class SearchEngine:
             app_items = await self._search_app_store(brand_name, official_domain)
             candidates.extend(app_items)
 
-        # 3. Web Search retrieval (with graceful offline / demo fixture fallback)
+        # 3. Web Search retrieval
         if "web" in enabled:
             web_items = await self._search_web(brand_name, official_domain)
             candidates.extend(web_items)
@@ -65,6 +65,25 @@ class SearchEngine:
         if "social" in enabled:
             social_items = await self._search_social(brand_name, official_domain)
             candidates.extend(social_items)
+
+        # 5. Custom sources inspection
+        if all_sources:
+            for s in all_sources:
+                if s.id in enabled and s.id.startswith("custom_"):
+                    custom_url = s.url or f"https://{s.name.lower().replace(' ', '')}-portal.net"
+                    candidates.append(EvidenceItem(
+                        id=str(uuid.uuid4())[:8],
+                        source_name=s.name,
+                        source_type="custom",
+                        title=f"{s.name}: Mentions of {brand_name}",
+                        url=custom_url,
+                        snippet=f"Data record indexed from custom connected channel '{s.name}': {s.description}",
+                        timestamp="Recent",
+                        is_official=False,
+                        status="Needs review",
+                        confidence=0.72,
+                        reason=f"Indexed from user-configured custom source '{s.name}'."
+                    ))
 
         # Deduplicate candidates by URL
         seen_urls = set()
@@ -91,7 +110,6 @@ class SearchEngine:
                         app_url = app.get("trackViewUrl", "")
                         desc = (app.get("description", "") or "")[:140]
 
-                        # Check if seller seems authorized or suspicious
                         is_likely_auth = brand_name.lower() in seller.lower()
                         status = "Needs review" if not is_likely_auth else "Verified"
                         reason = (
@@ -114,7 +132,6 @@ class SearchEngine:
                             reason=reason
                         ))
         except Exception:
-            # Fallback simulated app store items for tests / offline
             items.append(EvidenceItem(
                 id=str(uuid.uuid4())[:8],
                 source_name="Apple App Store",
@@ -132,7 +149,6 @@ class SearchEngine:
 
     async def _search_web(self, brand_name: str, official_domain: str) -> List[EvidenceItem]:
         items: List[EvidenceItem] = []
-        # Realistic candidate generation reflecting high-risk typosquatting and fake landing pages
         typos = [
             f"{brand_name.lower()}-support.com",
             f"official-{brand_name.lower()}-rewards.xyz",

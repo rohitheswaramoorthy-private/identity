@@ -1,9 +1,9 @@
 """
-Brand Protection AI - Main FastAPI Application.
+IdentityAI - Main FastAPI Application.
 """
 
 import os
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
@@ -11,8 +11,8 @@ from fastapi.responses import FileResponse
 from backend.routers import providers, sources, patents, analysis
 
 app = FastAPI(
-    title="Brand Protection AI",
-    description="Ultra-minimalist brand protection and impersonation intelligence.",
+    title="IdentityAI",
+    description="Ultra-minimalist brand identity protection and impersonation intelligence.",
     version="1.0.0"
 )
 
@@ -42,8 +42,8 @@ async def serve_index():
     index_file = os.path.join(static_dir, "index.html")
     if os.path.exists(index_file):
         return FileResponse(index_file)
-    return {"message": "Brand Protection AI API is running. UI building..."}
+    return {"message": "IdentityAI API is running. UI building..."}
 
 @app.get("/health")
 async def health_check():
-    return {"status": "ok", "service": "brand-protection-ai"}
+    return {"status": "ok", "service": "identity-ai"}

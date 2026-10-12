@@ -1,11 +1,12 @@
 """
-Sources Management API routes.
+Sources Management API routes for IdentityAI.
 """
 
-from fastapi import APIRouter
+import uuid
+from fastapi import APIRouter, HTTPException
 from typing import List
 from pydantic import BaseModel
-from backend.models import SourceItem
+from backend.models import SourceItem, CustomSourceCreateRequest
 
 router = APIRouter(prefix="/api/sources", tags=["sources"])
 
@@ -61,3 +62,18 @@ async def toggle_source(req: ToggleSourceRequest):
             s.status = "Active" if req.enabled else "Disabled"
             return {"success": True, "source": s}
     return {"success": False, "message": "Source not found"}
+
+@router.post("/add", response_model=SourceItem)
+async def add_custom_source(req: CustomSourceCreateRequest):
+    new_id = f"custom_{str(uuid.uuid4())[:8]}"
+    item = SourceItem(
+        id=new_id,
+        name=req.name.strip(),
+        category=req.category.strip() or "Custom",
+        description=req.description.strip(),
+        enabled=True,
+        status="Active",
+        url=req.url.strip() if req.url else None
+    )
+    SOURCES_DB.append(item)
+    return item

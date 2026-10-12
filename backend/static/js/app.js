@@ -1,10 +1,10 @@
 /**
- * Brand Protection AI - Minimalist Frontend Controller
+ * IdentityAI - Minimalist Frontend Controller
  */
 
 // Application State
 const state = {
-  sessionId: localStorage.getItem("bp_session_id") || "",
+  sessionId: localStorage.getItem("identity_session_id") || "",
   profile: {
     name: "",
     logo: "",
@@ -12,11 +12,11 @@ const state = {
     description: ""
   },
   provider: {
-    active: "demo",
-    model: "demo-heuristic-v1",
+    active: "ollama",
+    model: "llama3.2",
     isLocal: true,
-    connected: true,
-    statusMsg: "Connected (Offline Heuristic Engine)"
+    connected: false,
+    statusMsg: "Not configured"
   },
   currentView: "landing",
   analysisData: null,
@@ -39,9 +39,8 @@ async function initSession() {
   if (!state.sessionId) {
     try {
       const res = await fetch("/api/providers/status");
-      const data = await res.json();
       state.sessionId = res.headers.get("x-session-id") || Math.random().toString(36).substring(2, 15);
-      localStorage.setItem("bp_session_id", state.sessionId);
+      localStorage.setItem("identity_session_id", state.sessionId);
     } catch (e) {
       state.sessionId = "session-" + Math.random().toString(36).substring(2, 9);
     }
@@ -110,14 +109,15 @@ function renderReviewScreen() {
 
   document.getElementById("review-web-val").textContent = state.profile.website || "None provided";
   document.getElementById("review-desc-val").textContent = state.profile.description || "None provided";
+  document.getElementById("review-model-val").textContent = state.provider.model || "llama3.2";
 
   // Provider note in review
   const providerNotice = document.getElementById("review-provider-notice");
   if (providerNotice) {
     if (state.provider.isLocal) {
-      providerNotice.textContent = `Running privately with local provider (${state.provider.active}). Data stays on this device.`;
+      providerNotice.textContent = `Running privately with local provider (${state.provider.active} - ${state.provider.model}). Data stays strictly on this device.`;
     } else {
-      providerNotice.textContent = `Will be analyzed using cloud provider (${state.provider.active}). Cloud providers receive brand metadata under their privacy policy.`;
+      providerNotice.textContent = `Will be analyzed using cloud provider (${state.provider.active} - ${state.provider.model}). Cloud providers receive brand metadata under their privacy policy.`;
     }
   }
 }
@@ -198,6 +198,19 @@ function setupEventListeners() {
   document.getElementById("disconnect-btn").addEventListener("click", disconnectProvider);
   document.getElementById("toggle-key-visibility").addEventListener("click", toggleKeyVisibility);
 
+  // Ollama Scanning with Explicit User Permission
+  document.getElementById("ollama-scan-btn").addEventListener("click", scanLocalhostForOllama);
+  document.getElementById("reset-ollama-port-btn")?.addEventListener("click", () => {
+    document.getElementById("ollama-base-url").value = "http://localhost:11434";
+    document.getElementById("ollama-scan-indicator").textContent = "Reset to default port 11434. Click 'Allow & Scan Localhost' to connect.";
+  });
+  document.getElementById("ollama-quick-connect-btn")?.addEventListener("click", () => {
+    testProviderConnection();
+  });
+
+  // Custom Source Creation
+  document.getElementById("add-custom-source-btn")?.addEventListener("click", handleAddCustomSource);
+
   // Analysis trigger
   document.getElementById("start-analysis-btn").addEventListener("click", runAnalysis);
 }
@@ -243,12 +256,13 @@ function updateHeaderPill() {
   const pill = document.getElementById("provider-status-pill");
   if (!pill) return;
   const isLocal = state.provider.isLocal;
-  pill.textContent = `${state.provider.active.toUpperCase()} (${isLocal ? "Local" : "Cloud"})`;
+  pill.textContent = `${state.provider.active.toUpperCase()}: ${state.provider.model} (${isLocal ? "Local" : "Cloud"})`;
 }
 
 function openSettingsModal() {
   document.getElementById("settings-modal").classList.add("active");
   document.getElementById("provider-select").value = state.provider.active;
+  document.getElementById("custom-model-input").value = state.provider.model || "";
   handleProviderSelectChange();
 }
 
@@ -262,20 +276,18 @@ function handleProviderSelectChange() {
   const localNotice = document.getElementById("local-processing-notice");
   const cloudNotice = document.getElementById("cloud-processing-notice");
   const ollamaEndpoint = document.getElementById("ollama-endpoint-group");
+  const ollamaScanSection = document.getElementById("ollama-scan-section");
 
   if (prov === "ollama") {
     keyGroup.style.display = "none";
     ollamaEndpoint.style.display = "block";
-    localNotice.style.display = "block";
-    cloudNotice.style.display = "none";
-  } else if (prov === "demo") {
-    keyGroup.style.display = "none";
-    ollamaEndpoint.style.display = "none";
+    ollamaScanSection.style.display = "block";
     localNotice.style.display = "block";
     cloudNotice.style.display = "none";
   } else {
     keyGroup.style.display = "block";
     ollamaEndpoint.style.display = "none";
+    ollamaScanSection.style.display = "none";
     localNotice.style.display = "none";
     cloudNotice.style.display = "block";
   }
@@ -297,19 +309,91 @@ async function loadModelOptions(provider) {
         opt.textContent = m;
         modelSelect.appendChild(opt);
       });
+      // Add custom option
+      const customOpt = document.createElement("option");
+      customOpt.value = "custom";
+      customOpt.textContent = "+ Custom model (specified below)";
+      modelSelect.appendChild(customOpt);
     }
   } catch (e) {
     modelSelect.innerHTML = "<option value='default'>Standard</option>";
   }
 }
 
+// Ollama Localhost Scanning with Explicit Permission
+async function scanLocalhostForOllama() {
+  const btn = document.getElementById("ollama-scan-btn");
+  const indicator = document.getElementById("ollama-scan-indicator");
+  const discoveredBox = document.getElementById("ollama-discovered-box");
+  const tagsContainer = document.getElementById("ollama-model-tags");
+  const endpoint = document.getElementById("ollama-base-url").value || "http://localhost:11434";
+
+  btn.disabled = true;
+  btn.textContent = "Scanning...";
+  indicator.textContent = "Querying localhost:11434 with your consent...";
+
+  try {
+    const res = await fetch("/api/providers/ollama/scan", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        permission_granted: true,
+        base_url: endpoint
+      })
+    });
+
+    const data = await res.json();
+    if (data.running) {
+      const activeEndpoint = data.endpoint || endpoint;
+      document.getElementById("ollama-base-url").value = activeEndpoint;
+      indicator.innerHTML = `<span style="color: #248a3d; font-weight: 600;">✓ Connected to Ollama on ${activeEndpoint}</span>`;
+      discoveredBox.style.display = "block";
+      tagsContainer.innerHTML = "";
+
+      if (data.installed_models && data.installed_models.length > 0) {
+        data.installed_models.forEach(m => {
+          const pill = document.createElement("button");
+          pill.className = "model-tag";
+          pill.type = "button";
+          pill.textContent = m;
+          pill.onclick = () => {
+            document.querySelectorAll(".model-tag").forEach(t => t.classList.remove("selected"));
+            pill.classList.add("selected");
+            document.getElementById("custom-model-input").value = m;
+            document.getElementById("model-select").value = m;
+          };
+          tagsContainer.appendChild(pill);
+        });
+        // Select the first installed model by default
+        tagsContainer.firstChild.click();
+      } else {
+        tagsContainer.innerHTML = "<span style='font-size: 12px; color: var(--text-tertiary);'>No models downloaded yet. Run 'ollama pull llama3.2' in terminal.</span>";
+      }
+    } else {
+      indicator.innerHTML = `<span style="color: #d70015; font-weight: 500;">✗ ${data.message || "Ollama is not running on localhost."}</span>`;
+      discoveredBox.style.display = "none";
+    }
+  } catch (err) {
+    indicator.innerHTML = `<span style="color: #d70015; font-weight: 500;">✗ Could not reach local Ollama daemon.</span>`;
+    discoveredBox.style.display = "none";
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Re-Scan Localhost";
+  }
+}
+
+// Test Provider Connection
 async function testProviderConnection() {
   const btn = document.getElementById("test-connection-btn");
   const statusEl = document.getElementById("provider-test-status");
   const prov = document.getElementById("provider-select").value;
   const key = document.getElementById("provider-api-key").value;
-  const model = document.getElementById("model-select").value;
+  const customModel = document.getElementById("custom-model-input").value.trim();
+  const dropdownModel = document.getElementById("model-select").value;
   const baseUrl = document.getElementById("ollama-base-url")?.value || "";
+
+  // Custom model input takes priority if specified
+  const effectiveModel = customModel || (dropdownModel === "custom" ? "llama3.2" : dropdownModel);
 
   btn.disabled = true;
   btn.innerHTML = `<span class="loading-spinner"></span> Connecting...`;
@@ -325,7 +409,7 @@ async function testProviderConnection() {
       body: JSON.stringify({
         provider: prov,
         api_key: key,
-        model: model,
+        model: effectiveModel,
         base_url: baseUrl
       })
     });
@@ -334,12 +418,16 @@ async function testProviderConnection() {
     if (res.ok) {
       statusEl.style.display = "block";
       statusEl.className = "input-hint badge-verified";
+      if (data.base_url) {
+        document.getElementById("ollama-base-url").value = data.base_url;
+      }
       statusEl.textContent = `✓ ${data.message || "Connected successfully."}`;
       state.provider.active = prov;
-      state.provider.model = model;
+      state.provider.model = effectiveModel;
       state.provider.connected = true;
-      state.provider.isLocal = (prov === "demo" || prov === "ollama");
+      state.provider.isLocal = (prov === "ollama");
       updateHeaderPill();
+      renderReviewScreen();
     } else {
       statusEl.style.display = "block";
       statusEl.className = "input-hint badge-possible";
@@ -412,7 +500,10 @@ function renderSourcesList() {
     row.className = "review-item";
     row.innerHTML = `
       <div>
-        <div style="font-weight: 600; font-size: 14px;">${s.name}</div>
+        <div style="font-weight: 600; font-size: 14px;">
+          ${s.name}
+          ${s.id.startsWith('custom_') ? '<span class="badge badge-clean" style="margin-left: 6px;">Custom</span>' : ''}
+        </div>
         <div style="font-size: 12px; color: var(--text-secondary);">${s.description}</div>
       </div>
       <div>
@@ -440,6 +531,48 @@ window.toggleSource = async function(id, enable) {
   }
 };
 
+async function handleAddCustomSource() {
+  const nameInput = document.getElementById("custom-src-name");
+  const categoryInput = document.getElementById("custom-src-category");
+  const urlInput = document.getElementById("custom-src-url");
+  const descInput = document.getElementById("custom-src-desc");
+
+  const name = nameInput.value.trim();
+  const category = categoryInput.value.trim() || "Custom";
+  const url = urlInput.value.trim();
+  const desc = descInput.value.trim();
+
+  if (!name || !desc) {
+    alert("Please provide a Source Name and Description.");
+    return;
+  }
+
+  try {
+    const res = await fetch("/api/sources/add", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: name,
+        category: category,
+        url: url || null,
+        description: desc
+      })
+    });
+
+    if (res.ok) {
+      nameInput.value = "";
+      categoryInput.value = "";
+      urlInput.value = "";
+      descInput.value = "";
+      await loadSources();
+    } else {
+      alert("Failed to add custom source.");
+    }
+  } catch (err) {
+    console.error("Custom source add error", err);
+  }
+}
+
 // Analysis Execution Flow
 async function runAnalysis() {
   if (!state.profile.name) {
@@ -455,10 +588,10 @@ async function runAnalysis() {
   progressText.textContent = "Preparing brand profile & cryptographic hash...";
   await new Promise(r => setTimeout(r, 600));
 
-  progressText.textContent = "Querying authorized search & app registry connectors...";
+  progressText.textContent = "Querying authorized search & custom source connectors...";
   await new Promise(r => setTimeout(r, 700));
 
-  progressText.textContent = `Synthesizing evidence via ${state.provider.active.toUpperCase()}...`;
+  progressText.textContent = `Synthesizing evidence via ${state.provider.active.toUpperCase()} (${state.provider.model})...`;
 
   try {
     const [analysisRes, patentsRes] = await Promise.all([
@@ -474,7 +607,7 @@ async function runAnalysis() {
     ]);
 
     if (!analysisRes.ok) {
-      throw new Error("Analysis failed. Check your provider settings.");
+      throw new Error("Analysis failed. Verify your AI provider settings.");
     }
 
     state.analysisData = await analysisRes.json();
@@ -496,12 +629,6 @@ function renderResults() {
   document.getElementById("results-brand-title").textContent = d.brand_name;
   document.getElementById("results-summary-text").textContent = d.summary;
   document.getElementById("results-provider-badge").textContent = `${d.provider_used} (${d.model_used})`;
-
-  if (d.is_demo) {
-    document.getElementById("results-demo-banner").style.display = "block";
-  } else {
-    document.getElementById("results-demo-banner").style.display = "none";
-  }
 
   // Render Detections List
   renderDetectionsTab();

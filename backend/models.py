@@ -1,5 +1,5 @@
 """
-Pydantic Schemas for Brand Protection AI.
+Pydantic Schemas for IdentityAI.
 """
 
 from typing import List, Optional
@@ -22,9 +22,9 @@ class BrandProfile(BaseModel):
         return v
 
 class ProviderConfigRequest(BaseModel):
-    provider: str = Field(..., description="Provider name: openai, gemini, anthropic, ollama, custom, demo")
+    provider: str = Field(..., description="Provider name: ollama, openai, gemini, anthropic, custom")
     api_key: Optional[str] = Field(None, description="Masked/submitted API key")
-    model: Optional[str] = Field(None, description="Model identifier")
+    model: Optional[str] = Field(None, description="Model identifier or custom model name")
     base_url: Optional[str] = Field(None, description="Custom or Ollama base endpoint")
 
 class ProviderStatusResponse(BaseModel):
@@ -37,7 +37,7 @@ class ProviderStatusResponse(BaseModel):
 class EvidenceItem(BaseModel):
     id: str
     source_name: str
-    source_type: str  # web, social, app_store, patent
+    source_type: str  # web, social, app_store, patent, custom
     title: str
     url: str
     snippet: str
@@ -57,7 +57,6 @@ class AnalysisResponse(BaseModel):
     brand_name: str
     provider_used: str
     model_used: str
-    is_demo: bool
     summary: str
     total_checked: int
     sources_checked: List[str]
@@ -81,3 +80,10 @@ class SourceItem(BaseModel):
     description: str
     enabled: bool
     status: str
+    url: Optional[str] = None
+
+class CustomSourceCreateRequest(BaseModel):
+    name: str = Field(..., min_length=2, max_length=100)
+    category: str = Field("Custom", max_length=50)
+    description: str = Field(..., min_length=3, max_length=300)
+    url: Optional[str] = None
