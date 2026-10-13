@@ -1,12 +1,10 @@
 # IdentityAI
 
-An ultra-minimalist, iOS-inspired glassmorphism web platform for detecting brand impersonation, deceptive lookalikes, unauthorized apps, and scam campaigns.
+
 
 ---
 
-## Highlights
 
-- **Ultra-Minimalist iOS Glassmorphism UI**: Built with soft translucent surfaces (`backdrop-filter: blur(28px)`), rounded corners, charcoal typography, and fluid section transitions without visual clutter.
 - **Finalized Brand Identity**: Streamlined biometric squircle logo replacing generic shield symbols.
 - **Strict 4-Card Landing Experience**: Focuses exclusively on the 4 primary brand identity pillars: **Name**, **Logo**, **Website**, and **Description**.
 - **Multi-Provider AI Intelligence (No Demo Mode)**:
